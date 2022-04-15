@@ -55,7 +55,12 @@ public class UserOperate {
 
             case "6":
                 System.out.println();//换个行
-                System.out.println(Update.changePassword(user) ? "修改成功\n" : "修改失败\n");//修改密码
+                if(Update.changePassword(user)){//修改密码
+                    System.out.println("修改成功，请重新登录！");
+                    System.exit(0);//杀死进程，重新登陆
+                }else{
+                    System.out.println("修改失败");
+                }
                 break;
 
         }

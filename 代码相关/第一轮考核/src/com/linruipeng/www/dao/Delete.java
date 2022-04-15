@@ -1,6 +1,7 @@
 package com.linruipeng.www.dao;
 
 import com.linruipeng.www.po.User;
+import com.linruipeng.www.service.SignTimeOperate;
 import com.linruipeng.www.util.DBUtil;
 
 import java.sql.Connection;
@@ -102,7 +103,7 @@ public class Delete{
             conn.setAutoCommit(false);//开启事物
             //3、获取数据库操作对象
 
-            String sql = "delete from apply where applicant = ? and applyltrible = ? and founder = ?";
+            String sql = "delete from apply where applicant = ? and applyTribe = ? and founder = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, applicant);
             ps.setString(2, tribeName);
@@ -180,7 +181,7 @@ public class Delete{
             Update.updateMark(user, 2);
             //部落的签到时间也是如此
             //存入数据库中，动态修改
-            Update.updateTribeTime(user, 0L);
+            Update.updateTribeTime(user, SignTimeOperate.nowTime() - 60 * 60 *24);//部落签到时间回到一天前，防止等会新加入部落的家伙被检测到七天没签到
 
             return true;//程序执行到这里说明成功了
         } catch (Exception e) {

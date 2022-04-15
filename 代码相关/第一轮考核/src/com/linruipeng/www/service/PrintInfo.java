@@ -20,7 +20,12 @@ public class PrintInfo {
         System.out.println("用户名：" + LoginVerify.user.getUsername());
         System.out.println("性别：" + LoginVerify.user.getSex());
         System.out.println("阵营：" + LoginVerify.user.getGroup());
-        System.out.println("部落：" + LoginVerify.user.getTribe());
+        //下面是打印没有部落的成员部落信息为无，而不是无1、无2
+        if(!"无1".equals(LoginVerify.user.getTribe()) && !"无2".equals(LoginVerify.user.getTribe())) {
+            System.out.println("部落：" + LoginVerify.user.getTribe());
+        }else{
+            System.out.println("部落：无");
+        }
         System.out.println("金币：" + LoginVerify.user.getMoney());
         System.out.println("点赞：" + LoginVerify.user.getLikes());
         System.out.println();//换个行

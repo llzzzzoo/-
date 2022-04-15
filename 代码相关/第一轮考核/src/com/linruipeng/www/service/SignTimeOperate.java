@@ -50,9 +50,8 @@ public class SignTimeOperate {
                 user.setDateTribeTime(nowTimeSeconds);
             }else {
                 //不知道为什么我要写个这玩意,估计就为了排除没部落的家伙吧，其实也不用写，反正没部落也搞不了这个功能
-                if (!"无1".equals(user.getTribe()) || !"无2".equals(user.getTribe())) {
+                if (!"无1".equals(user.getTribe()) && !"无2".equals(user.getTribe())) {
                     Notice.createNoticeRecord(user, "部落签到通知", "您好，今天您部落签到了吗^_^", user.getUsername());
-
                     //这个操作是当用户三天没部落签到就告诉老大，然后老大决定要不要踢出
                     if (gapTimeSeconds > 7 * 60 * 60 * 24 && !user.getUsername().equals(Select.selectMyTribeBoss(user))) {
                         signMark = 1;

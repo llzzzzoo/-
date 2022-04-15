@@ -2,6 +2,7 @@ package com.linruipeng.www.dao;
 
 import com.linruipeng.www.po.User;
 import com.linruipeng.www.service.CreateRandom;
+import com.linruipeng.www.service.SignTimeOperate;
 import com.linruipeng.www.util.DBUtil;
 
 import java.sql.*;
@@ -196,6 +197,61 @@ public class Update {
 
     }
 
+
+    /**
+     * 这里实现申请部落接受了，部落签到时间更新，防止提醒活跃度太低
+     * @param applicant 这个就是修改申请人的部落签到
+     */
+    public static void updateApplicantTribeTime(String applicant, Long dateTribe){
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int money;
+
+        try {
+            //1、2步靠工具类完成了
+            conn = DBUtil.getConnection();
+
+            //将自动提交机制改为手动提交
+            conn.setAutoCommit(false);//开启事物
+
+            //3、获取数据库操作对象
+
+            //修改
+            String sql = "update user set dateTribe = ? where username = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1, dateTribe);//如果通过了上面的检测，就可以使用sql语句操作了，这里的操作是指修改金币数目
+            ps.setString(2, applicant);
+
+            //count用于判断操作影响了几行，相当于判断操作成功没有
+            int count = ps.executeUpdate();
+            if(1 != count){
+                System.out.println("程序执行异常");
+                return;
+            }
+
+            //程序执行到此处说明没有发生异常，那么事务结束，手动提交数据
+            conn.commit();//提交事务
+
+        }catch (Exception e) {
+            //回滚事物，相当于出现异常把改变了的数据搞回来，雀氏牛批
+            if(conn != null){
+                try {
+                    conn.rollback();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        }finally{
+            DBUtil.releaseConnection(conn);//释放连接
+            DBUtil.close(ps, rs);//工具类
+        }
+
+    }
+
+
+
     /**
      * 这里实现退出部落的操作，说白了就是把部落修改为"无"罢了
      * @param user 修改的对象
@@ -256,7 +312,7 @@ public class Update {
             updateQuitTribeTime(user);//开始操作
 
             //同时，我也必须把部落签到时间归零
-            updateTribeTime(user, 0L);//记得参数要带L，毕竟Long嘛
+            updateTribeTime(user, SignTimeOperate.nowTime() - 60 * 60 *24);//部落签到时间回到一天前，防止等会新加入部落的家伙被检测到七天没签到
 
             Update.updateMark(user, 2);//还得修改数据库的mark，退出部落就是普通人员咯
             user.setMark(2);//动态修改
@@ -420,6 +476,9 @@ public class Update {
             applyTribeChangePeoNum(user, Select.selectTribePeoNumAccu(user, user.getTribe()) + 1);//这里写的加部落人数的操作有点奇怪，但是没有关系，毕竟它不跑起来我就跑了
             //减少用户的钱钱
             joinTribeReduceMoney(applicant, 0);
+            //修改部落签到时间为此刻的一天前，防止提醒活跃度太低
+            updateApplicantTribeTime(applicant, SignTimeOperate.nowTime() - 60 * 60 * 24);
+
 
             return true;
         }catch (Exception e) {
@@ -856,9 +915,10 @@ public class Update {
                 //user.setTribe("无2");//动态修改
             }
 
-            String sql3 = "update user set dateTribe = 0 where username = ?";//这个是实现退出部落，签到清零的操作，秒啊，刚好我解散部落的时候用的到
+            String sql3 = "update user set dateTribe = ? where username = ?";//这个是实现退出部落，签到转到昨天的操作，就是防止等会新加部落不能签到了
             ps3 = conn.prepareStatement(sql3);
-            ps3.setString(1, username);
+            ps3.setLong(1, SignTimeOperate.nowTime() - 60 * 60 * 24);//签到时间回到一天前，防止用户解散后加入部落被部落首领吊活跃度太低
+            ps3.setString(2, username);
             count3 = ps3.executeUpdate();
 
             //count用于判断操作影响了几行，相当于判断操作成功没有

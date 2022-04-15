@@ -105,7 +105,7 @@ public class Apply {
             conn.setAutoCommit(false);//开启事物
 
             //修改
-            String sql1 = "update apply set status = ? where applicant = ? and applyltrible = ?";
+            String sql1 = "update apply set status = ? where applicant = ? and applytribe = ?";
             ps = conn.prepareStatement(sql1);
             ps.setInt(1, status);//如果通过了上面的检测，就可以使用sql语句操作了，这里的操作是指修改金币数目
             ps.setString(2, applicant);

@@ -107,6 +107,7 @@ public class TribeOperate {
                     } while (!"Y".equals(judge) && !"N".equals(judge));
                     if("Y".equals(judge)) {
                         // 并且部落的成员全部部落变为对应阵营的无
+                        //以及修改部落签到时间为一天前，防止等会新加入部落不能签到
                         changeResult = Update.updateAllTribe(user);
                         if(!changeResult){
                             System.out.println("程序执行错误!");

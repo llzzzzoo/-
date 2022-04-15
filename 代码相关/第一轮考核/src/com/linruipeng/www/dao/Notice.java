@@ -182,7 +182,7 @@ public class Notice {
             while(rs.next()){//遍历结果集
                 //当不是部落长的就给他发这条消息
                 if(1 != rs.getInt(12)) {
-                    createNoticeRecord(user, "部落解散通知", "兄弟，少玩游戏多陪家人吧唉", rs.getString(2));
+                    createNoticeRecord(user, "部落解散通知", "您当前所在的部落“" + user.getTribe() + "”已解散", rs.getString(2));
                 }
             }
         } catch (Exception e) {

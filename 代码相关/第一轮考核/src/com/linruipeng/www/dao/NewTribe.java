@@ -87,7 +87,7 @@ public class NewTribe {
             Update.updateMark(user, 1);//还得修改数据库的mark，创建部落肯定就是部落首领咯
 
             //同时，我也必须把部落签到时间归零
-            Update.updateTribeTime(user, 0L);//记得参数要带L，毕竟Long嘛//还得修改部落签到时间
+            Update.updateTribeTime(user, 0L);//记得参数要带L，毕竟Long嘛，还得修改部落签到时间，这里还是0因为新建部落嘛，而且活跃度又不会通知部落首领
 
             return true;//程序执行成功
         } catch (Exception e) {
